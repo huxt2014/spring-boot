@@ -48,6 +48,7 @@ public class JarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	public static void main(String[] args) throws Exception {
+		// 1.1 用于启动jar文件（包括解压缩后）中的application
 		new JarLauncher().launch(args);
 	}
 

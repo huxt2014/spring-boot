@@ -42,6 +42,7 @@ public class MainMethodRunner {
 	}
 
 	public void run() throws Exception {
+		// 1.6 加载Start-Class并调用main方法
 		Class<?> mainClass = Thread.currentThread().getContextClassLoader()
 				.loadClass(this.mainClassName);
 		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);

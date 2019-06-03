@@ -35,6 +35,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	public ExecutableArchiveLauncher() {
 		try {
+			// 1.2  Archive提供了读取jar文件的接口
 			this.archive = createArchive();
 		}
 		catch (Exception ex) {
@@ -52,6 +53,7 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected String getMainClass() throws Exception {
+		// 1.5 读取META-INF/MANIFEST.MF文件中的Start-Class
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = null;
 		if (manifest != null) {

@@ -293,11 +293,13 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
+		// 2.6 run的入口
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
+		// 2.7 读取META-INF/spring.factories中的listeners
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -307,13 +309,16 @@ public class SpringApplication {
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
+			// 2.8 创建一个context
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
+			// 2.9 如果是web应用，那么tomcat在这里开始监听，但是不会处理请求
 			refreshContext(context);
+			// 2.10 从context找出ApplicationRunner和CommandLineRunner，并运行
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
