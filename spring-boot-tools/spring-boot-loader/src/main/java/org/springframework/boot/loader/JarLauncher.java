@@ -27,6 +27,7 @@ import org.springframework.boot.loader.archive.Archive;
  * @author Andy Wilkinson
  */
 public class JarLauncher extends ExecutableArchiveLauncher {
+	// 用于启动jar文件中的application
 
 	static final String BOOT_INF_CLASSES = "BOOT-INF/classes/";
 

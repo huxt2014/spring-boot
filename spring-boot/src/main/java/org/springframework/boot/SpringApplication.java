@@ -221,6 +221,7 @@ public class SpringApplication {
 	 * @see #run(Object, String[])
 	 * @see #SpringApplication(ResourceLoader, Object...)
 	 */
+	// 1.1 初始化SpringApplication
 	public SpringApplication(Object... sources) {
 		initialize(sources);
 	}
@@ -245,10 +246,14 @@ public class SpringApplication {
 		if (sources != null && sources.length > 0) {
 			this.sources.addAll(Arrays.asList(sources));
 		}
+		// 1.2 推断是否属于web服务
 		this.webEnvironment = deduceWebEnvironment();
+		// 1.3 从META-INF/spring.factories文件中找到ApplicationContextInitializer的实现
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
+		// 1.4 从META-INF/spring.factories文件中找到ApplicationListener的实现
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 1.5 从stack trace中推断main class
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -282,6 +287,7 @@ public class SpringApplication {
 	 * @param args the application arguments (usually passed from a Java main method)
 	 * @return a running {@link ApplicationContext}
 	 */
+	// 1.6 run的入口
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
@@ -296,12 +302,15 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			Banner printedBanner = printBanner(environment);
+			// 1.7 创建一个context
 			context = createApplicationContext();
 			analyzers = new FailureAnalyzers(context);
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
 			refreshContext(context);
+			// 1.9 从context找出Runner，并运行
 			afterRefresh(context, applicationArguments);
+			//
 			listeners.finished(context, null);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
@@ -515,6 +524,7 @@ public class SpringApplication {
 	protected ConfigurableApplicationContext createApplicationContext() {
 		Class<?> contextClass = this.applicationContextClass;
 		if (contextClass == null) {
+			// 1.8 如果没有指定的话，按照this.webApplicationType来推断
 			try {
 				contextClass = Class.forName(this.webEnvironment
 						? DEFAULT_WEB_CONTEXT_CLASS : DEFAULT_CONTEXT_CLASS);

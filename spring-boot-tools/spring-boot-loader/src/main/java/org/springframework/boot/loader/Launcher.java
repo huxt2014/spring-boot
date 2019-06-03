@@ -46,6 +46,7 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args) throws Exception {
 		JarFile.registerUrlProtocolHandler();
+		// 会创建一个新的ClassLoader
 		ClassLoader classLoader = createClassLoader(getClassPathArchives());
 		launch(args, getMainClass(), classLoader);
 	}
