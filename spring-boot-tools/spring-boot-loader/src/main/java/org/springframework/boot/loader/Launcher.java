@@ -46,7 +46,8 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args) throws Exception {
 		JarFile.registerUrlProtocolHandler();
-		// 会创建一个新的ClassLoader
+		// 1.3 获得archive内部包含的所有archive，即BOOT-INF路径下的class/jar
+		// 1.4 创建一个新的ClassLoader
 		ClassLoader classLoader = createClassLoader(getClassPathArchives());
 		launch(args, getMainClass(), classLoader);
 	}
