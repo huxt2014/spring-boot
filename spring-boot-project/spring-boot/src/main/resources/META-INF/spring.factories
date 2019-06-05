@@ -1,3 +1,4 @@
+# 2.3.2
 # PropertySource Loaders
 org.springframework.boot.env.PropertySourceLoader=\
 org.springframework.boot.env.PropertiesPropertySourceLoader,\

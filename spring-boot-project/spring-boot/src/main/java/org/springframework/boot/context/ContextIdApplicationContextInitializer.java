@@ -50,6 +50,7 @@ public class ContextIdApplicationContextInitializer implements
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		// 2.7.1.4
 		ContextId contextId = getContextId(applicationContext);
 		applicationContext.setId(contextId.getId());
 		applicationContext.getBeanFactory().registerSingleton(ContextId.class.getName(),

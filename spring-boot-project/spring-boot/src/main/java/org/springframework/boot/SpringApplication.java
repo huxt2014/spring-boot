@@ -261,13 +261,17 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+		// 2.1 初始化
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		// 2.2 从classloader中按名称查找对应的类，从而推断应用类型。如果依赖配置错误，在这里可能会出问题。
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		// 2.3 加载META-INF/spring.factories文件，读取里面的配置
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 2.4 从stacktrace中推断
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -293,13 +297,12 @@ public class SpringApplication {
 	 * @return a running {@link ApplicationContext}
 	 */
 	public ConfigurableApplicationContext run(String... args) {
-		// 2.6 run的入口
+		// 2.5 run的入口
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
-		// 2.7 读取META-INF/spring.factories中的listeners
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
@@ -309,16 +312,16 @@ public class SpringApplication {
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
-			// 2.8 创建一个context
+			// 2.6 创建一个context，没有传入额外的参数
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);
+			// 2.7 做一些额外的工作
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
-			// 2.9 如果是web应用，那么tomcat在这里开始监听，但是不会处理请求
+			// 2.8 如果是web应用，那么tomcat在这里开始监听，但是不会处理请求
 			refreshContext(context);
-			// 2.10 从context找出ApplicationRunner和CommandLineRunner，并运行
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
@@ -326,6 +329,7 @@ public class SpringApplication {
 						.logStarted(getApplicationLog(), stopWatch);
 			}
 			listeners.started(context);
+			// 2. 从context找出ApplicationRunner和CommandLineRunner，并运行
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -375,6 +379,7 @@ public class SpringApplication {
 			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
+		// 2.7.1 调用Initializer
 		applyInitializers(context);
 		listeners.contextPrepared(context);
 		if (this.logStartupInfo) {
@@ -394,6 +399,7 @@ public class SpringApplication {
 		// Load the sources
 		Set<Object> sources = getAllSources();
 		Assert.notEmpty(sources, "Sources must not be empty");
+		// 2.7.2 注册bean
 		load(context, sources.toArray(new Object[0]));
 		listeners.contextLoaded(context);
 	}

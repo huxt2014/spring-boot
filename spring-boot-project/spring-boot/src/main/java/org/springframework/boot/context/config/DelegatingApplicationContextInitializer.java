@@ -49,6 +49,7 @@ public class DelegatingApplicationContextInitializer implements
 
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
+		// 2.7.1.5
 		ConfigurableEnvironment environment = context.getEnvironment();
 		List<Class<?>> initializerClasses = getInitializerClasses(environment);
 		if (!initializerClasses.isEmpty()) {

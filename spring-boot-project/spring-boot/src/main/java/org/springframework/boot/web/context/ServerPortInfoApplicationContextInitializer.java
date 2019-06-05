@@ -55,6 +55,7 @@ public class ServerPortInfoApplicationContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		// 2.7.1.6
 		applicationContext.addApplicationListener(this);
 	}
 

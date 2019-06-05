@@ -85,6 +85,7 @@ public abstract class Launcher {
 	 */
 	protected void launch(String[] args, String mainClass, ClassLoader classLoader)
 			throws Exception {
+		// 1.6 为当前线程设置新的classLoader
 		Thread.currentThread().setContextClassLoader(classLoader);
 		createMainMethodRunner(mainClass, args, classLoader).run();
 	}

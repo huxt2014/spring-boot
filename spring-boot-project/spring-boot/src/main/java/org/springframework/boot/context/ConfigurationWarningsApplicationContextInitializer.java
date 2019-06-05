@@ -57,6 +57,7 @@ public class ConfigurationWarningsApplicationContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext context) {
+		// 2.7.1.3
 		context.addBeanFactoryPostProcessor(
 				new ConfigurationWarningsPostProcessor(getChecks()));
 	}

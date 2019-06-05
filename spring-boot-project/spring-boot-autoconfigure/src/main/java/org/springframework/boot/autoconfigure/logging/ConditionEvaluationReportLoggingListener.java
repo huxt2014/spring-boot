@@ -79,6 +79,7 @@ public class ConditionEvaluationReportLoggingListener
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
+		// 2.7.1.2
 		this.applicationContext = applicationContext;
 		applicationContext
 				.addApplicationListener(new ConditionEvaluationReportListener());
