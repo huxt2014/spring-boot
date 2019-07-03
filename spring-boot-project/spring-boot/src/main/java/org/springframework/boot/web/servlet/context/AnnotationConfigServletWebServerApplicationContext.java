@@ -196,13 +196,16 @@ public class AnnotationConfigServletWebServerApplicationContext
 
 	@Override
 	protected void prepareRefresh() {
+		// 2.8.1
 		this.scanner.clearCache();
 		super.prepareRefresh();
 	}
 
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 2.8.2
 		super.postProcessBeanFactory(beanFactory);
+		// 2.8.5
 		if (this.basePackages != null && this.basePackages.length > 0) {
 			this.scanner.scan(this.basePackages);
 		}

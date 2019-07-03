@@ -312,7 +312,7 @@ public class SpringApplication {
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
-			// 2.6 创建一个context，没有传入额外的参数
+			// 2.6 创建一个context，没有传入额外的参数，所以不会自动refresh
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,
@@ -320,8 +320,9 @@ public class SpringApplication {
 			// 2.7 做一些额外的工作
 			prepareContext(context, environment, listeners, applicationArguments,
 					printedBanner);
-			// 2.8 如果是web应用，那么tomcat在这里开始监听，但是不会处理请求
+			// 2.8 调用refresh，会启动一个web server
 			refreshContext(context);
+			// 啥也没做
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
 			if (this.logStartupInfo) {
@@ -329,7 +330,7 @@ public class SpringApplication {
 						.logStarted(getApplicationLog(), stopWatch);
 			}
 			listeners.started(context);
-			// 2. 从context找出ApplicationRunner和CommandLineRunner，并运行
+			// 2.9 从context找出ApplicationRunner和CommandLineRunner，并运行
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
@@ -344,6 +345,7 @@ public class SpringApplication {
 			handleRunFailure(context, ex, exceptionReporters, null);
 			throw new IllegalStateException(ex);
 		}
+		// 2.10 SpringApplication启动完成，返回context。
 		return context;
 	}
 

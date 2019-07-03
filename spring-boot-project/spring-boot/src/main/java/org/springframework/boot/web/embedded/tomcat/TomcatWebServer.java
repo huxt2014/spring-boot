@@ -83,6 +83,7 @@ public class TomcatWebServer implements WebServer {
 		Assert.notNull(tomcat, "Tomcat Server must not be null");
 		this.tomcat = tomcat;
 		this.autoStart = autoStart;
+		// 3.3.5 需要做一些初始化工作
 		initialize();
 	}
 
@@ -92,6 +93,7 @@ public class TomcatWebServer implements WebServer {
 			try {
 				addInstanceIdToEngineName();
 
+				// 3.3.6 往tomcat注册一个事件，在启动的时候remove connectors
 				Context context = findContext();
 				context.addLifecycleListener((event) -> {
 					if (context.equals(event.getSource())
@@ -103,6 +105,7 @@ public class TomcatWebServer implements WebServer {
 				});
 
 				// Start the server to trigger initialization listeners
+				// 3.3.7 直接start Tomcat
 				this.tomcat.start();
 
 				// We can re-throw failure exception directly in the main thread
@@ -118,6 +121,7 @@ public class TomcatWebServer implements WebServer {
 
 				// Unlike Jetty, all Tomcat threads are daemon threads. We create a
 				// blocking non-daemon to stop immediate shutdown
+				// 3.3.8 在另外一个线程中启动tomcat
 				startDaemonAwaitThread();
 			}
 			catch (Exception ex) {
@@ -178,6 +182,7 @@ public class TomcatWebServer implements WebServer {
 
 			@Override
 			public void run() {
+				// 3.3.9 调用await方法
 				TomcatWebServer.this.tomcat.getServer().await();
 			}
 
@@ -185,6 +190,7 @@ public class TomcatWebServer implements WebServer {
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
 		awaitThread.start();
+		// 3.3.10 TomcatWebServer创建完成
 	}
 
 	@Override
@@ -194,9 +200,11 @@ public class TomcatWebServer implements WebServer {
 				return;
 			}
 			try {
+				// 3.4.2 将connector添加回来
 				addPreviouslyRemovedConnectors();
 				Connector connector = this.tomcat.getConnector();
 				if (connector != null && this.autoStart) {
+					// 3.4.3 通常autoStart
 					performDeferredLoadOnStartup();
 				}
 				checkThatConnectorsHaveStarted();
@@ -279,6 +287,7 @@ public class TomcatWebServer implements WebServer {
 		try {
 			for (Container child : this.tomcat.getHost().findChildren()) {
 				if (child instanceof TomcatEmbeddedContext) {
+					// 3.4.4 调用deferredLoadOnStartup
 					((TomcatEmbeddedContext) child).deferredLoadOnStartup();
 				}
 			}

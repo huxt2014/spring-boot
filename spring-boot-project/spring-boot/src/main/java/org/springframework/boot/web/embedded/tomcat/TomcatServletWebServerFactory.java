@@ -163,14 +163,17 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
+		// 3.3.1 获得一个Tomcat
 		Tomcat tomcat = new Tomcat();
 		File baseDir = (this.baseDirectory != null) ? this.baseDirectory
 				: createTempDir("tomcat");
 		tomcat.setBaseDir(baseDir.getAbsolutePath());
+		// 3.3.2 添加一个connector
 		Connector connector = new Connector(this.protocol);
 		tomcat.getService().addConnector(connector);
 		customizeConnector(connector);
 		tomcat.setConnector(connector);
+		// 3.3.3 其他的配置
 		tomcat.getHost().setAutoDeploy(false);
 		configureEngine(tomcat.getEngine());
 		for (Connector additionalConnector : this.additionalTomcatConnectors) {
@@ -424,6 +427,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * @return a new {@link TomcatWebServer} instance
 	 */
 	protected TomcatWebServer getTomcatWebServer(Tomcat tomcat) {
+		// 3.3.4 包装到TomcatWebServer中，如果设置了port那么就自动启动
 		return new TomcatWebServer(tomcat, getPort() >= 0);
 	}
 

@@ -130,6 +130,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	 */
 	@Override
 	protected void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		// 2.8.3
 		beanFactory.addBeanPostProcessor(
 				new WebApplicationContextServletContextAwareProcessor(this));
 		beanFactory.ignoreDependencyInterface(ServletContextAware.class);
@@ -149,8 +150,10 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	protected void onRefresh() {
+		// 2.8.6
 		super.onRefresh();
 		try {
+			// 3.1 在context.refresh的时候创建web server
 			createWebServer();
 		}
 		catch (Throwable ex) {
@@ -160,11 +163,14 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 
 	@Override
 	protected void finishRefresh() {
+		// 2.8.7
 		super.finishRefresh();
+		// 3.4 启动webServer
 		WebServer webServer = startWebServer();
 		if (webServer != null) {
 			publishEvent(new ServletWebServerInitializedEvent(webServer, this));
 		}
+		// 3.5 完事，等当前线程结束，tomcat就开始处理HTTP请求了
 	}
 
 	@Override
@@ -177,7 +183,9 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
+			// 3.2 从context中获得ServletWebServerFactory的实例，例如org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory
 			ServletWebServerFactory factory = getWebServerFactory();
+			// 3.3 获得一个webServer，例如org.springframework.boot.web.embedded.tomcat.TomcatWebServer
 			this.webServer = factory.getWebServer(getSelfInitializer());
 		}
 		else if (servletContext != null) {
@@ -244,6 +252,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	}
 
 	private void registerWebApplicationScopes() {
+		// 2.8.4
 		ExistingWebApplicationScopes existingScopes = new ExistingWebApplicationScopes(
 				getBeanFactory());
 		WebApplicationContextUtils.registerWebApplicationScopes(getBeanFactory());
@@ -308,6 +317,7 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 	private WebServer startWebServer() {
 		WebServer webServer = this.webServer;
 		if (webServer != null) {
+			// 3.4.1 调用start方法，例如TomcatWebServer.start
 			webServer.start();
 		}
 		return webServer;
