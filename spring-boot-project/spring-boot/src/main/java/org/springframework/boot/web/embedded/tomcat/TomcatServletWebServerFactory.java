@@ -192,6 +192,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	protected void prepareContext(Host host, ServletContextInitializer[] initializers) {
 		File documentRoot = getValidDocumentRoot();
+		// 3.3.4 为host创建一个container
 		TomcatEmbeddedContext context = new TomcatEmbeddedContext();
 		if (documentRoot != null) {
 			context.setResources(new LoaderHidingResourceRoot(context));
@@ -221,6 +222,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 		loader.setDelegate(true);
 		context.setLoader(loader);
 		if (isRegisterDefaultServlet()) {
+			// 3.3.5 为context创建wrapper
 			addDefaultServlet(context);
 		}
 		if (shouldRegisterJspServlet()) {
@@ -260,6 +262,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	}
 
 	private void addDefaultServlet(Context context) {
+		// 创建一个StandardWrapper，后续有可能会被改掉
 		Wrapper defaultServlet = context.createWrapper();
 		defaultServlet.setName("default");
 		defaultServlet.setServletClass("org.apache.catalina.servlets.DefaultServlet");

@@ -78,6 +78,9 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
 @Inherited
 @AutoConfigurationPackage
 @Import(AutoConfigurationImportSelector.class)
+// 4.1 使用EnableAutoConfiguration后，会带上@import AutoConfigurationImportSelector
+// 4.2 AutoConfigurationImportSelector实现了DeferredImportSelector接口，因此在调用context.fresh()的时候，
+// @Import(AutoConfigurationImportSelector.class)会被ConfigurationClassPostProcessor处理。
 public @interface EnableAutoConfiguration {
 
 	String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";

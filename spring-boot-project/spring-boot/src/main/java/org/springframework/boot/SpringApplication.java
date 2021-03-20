@@ -265,9 +265,10 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
-		// 2.2 从classloader中按名称查找对应的类，从而推断应用类型。如果依赖配置错误，在这里可能会出问题。
+		// 2.2 从classloader中按名称查找对应的类，从而推断应用类型。
+		// 如果依赖配置错误，在这里可能会出问题，所以推荐使用starter来配置主要的依赖。
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
-		// 2.3 加载META-INF/spring.factories文件，读取里面的配置
+		// 2.3 从所有jar包中的META-INF/spring.factories文件中，读取实现了对应接口的类。
 		setInitializers((Collection) getSpringFactoriesInstances(
 				ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
@@ -303,16 +304,23 @@ public class SpringApplication {
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
+		// META-INF/spring.factories文件，SpringApplicationRunListener接口，调用onApplicationEvent方法
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(
 					args);
+			// 读取了配置文件(application.properties)的路径，
 			ConfigurableEnvironment environment = prepareEnvironment(listeners,
 					applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
-			// 2.6 创建一个context，没有传入额外的参数，所以不会自动refresh
+			// 2.6 创建一个context，根据应用类型使用对应的实现。没有传入额外的参数，所以不会自动refresh
+			// 可能是:
+			//   AnnotationConfigApplicationContext
+			//   AnnotationConfigServletWebServerApplicationContext
+			//   AnnotationConfigReactiveWebServerApplicationContext
+			// context的实现对于整个初始化过程有很大的影响
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(
 					SpringBootExceptionReporter.class,

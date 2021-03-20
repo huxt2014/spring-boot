@@ -116,17 +116,20 @@ public class AutoConfigurationImportSelector
 			return EMPTY_ENTRY;
 		}
 		AnnotationAttributes attributes = getAttributes(annotationMetadata);
+		// 4.4.2 从所有的META-INF/spring.factories中找到EnableAutoConfiguration相关的class
 		List<String> configurations = getCandidateConfigurations(annotationMetadata,
 				attributes);
 		configurations = removeDuplicates(configurations);
 		Set<String> exclusions = getExclusions(annotationMetadata, attributes);
 		checkExcludedClasses(configurations, exclusions);
 		configurations.removeAll(exclusions);
+		// 4.4.3 按照properties过滤一部分
 		configurations = filter(configurations, autoConfigurationMetadata);
 		fireAutoConfigurationImportEvents(configurations, exclusions);
 		return new AutoConfigurationEntry(configurations, exclusions);
 	}
 
+	// 4.3 获得import group
 	@Override
 	public Class<? extends Group> getImportGroup() {
 		return AutoConfigurationGroup.class;
@@ -411,6 +414,7 @@ public class AutoConfigurationImportSelector
 		@Override
 		public void process(AnnotationMetadata annotationMetadata,
 				DeferredImportSelector deferredImportSelector) {
+			// 4.4 调用process
 			Assert.state(
 					deferredImportSelector instanceof AutoConfigurationImportSelector,
 					() -> String.format("Only %s implementations are supported, got %s",
@@ -427,6 +431,7 @@ public class AutoConfigurationImportSelector
 
 		@Override
 		public Iterable<Entry> selectImports() {
+			// 4.5 调用selectImports，得到需要加载的class
 			if (this.autoConfigurationEntries.isEmpty()) {
 				return Collections.emptyList();
 			}
@@ -448,6 +453,7 @@ public class AutoConfigurationImportSelector
 		}
 
 		private AutoConfigurationMetadata getAutoConfigurationMetadata() {
+			// 4.4.1 加载META-INF/spring-autoconfigure-metadata.properties中的配置
 			if (this.autoConfigurationMetadata == null) {
 				this.autoConfigurationMetadata = AutoConfigurationMetadataLoader
 						.loadMetadata(this.beanClassLoader);

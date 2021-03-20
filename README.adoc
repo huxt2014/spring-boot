@@ -3,3 +3,5 @@
 1. 从jar文件启动Start-Class
 2. SpringApplication.run的执行过程
 3. SpringApplication启动Tomcat
+4. EnableAutoConfiguration-AutoConfigurationImportSelector
+5. EnableAutoConfiguration-AutoConfigurationPackage
